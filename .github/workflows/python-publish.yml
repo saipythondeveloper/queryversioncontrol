@@ -42,5 +42,5 @@ jobs:
 
       - name: Run Script to Push SQL to AEP
         env:
-          SQL_FILE_PATHS: ${{ steps.file_finder.outputs.sql_files }}
+          SQL_FILE_PATH: ${{ steps.file_finder.outputs.sql_files }}
         run: python scripts/push_to_aep.py
