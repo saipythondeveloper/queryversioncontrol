@@ -42,8 +42,4 @@ jobs:
       - name: Run Script to Push SQL to AEP
         env:
           SQL_FILE_PATH: ${{ steps.file_finder.outputs.sql_files }}
-          AEP_AUTH_TOKEN: ${{ secrets.AEP_AUTH_TOKEN }}
-          AEP_API_KEY: ${{ secrets.AEP_API_KEY }}
-          AEP_ORG_ID: ${{ secrets.AEP_ORG_ID }}
-          AEP_SANDBOX: ${{ secrets.AEP_SANDBOX }}
         run: python scripts/push_to_aep.py
