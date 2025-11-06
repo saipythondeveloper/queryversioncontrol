@@ -1,0 +1,42 @@
+name: Push SQL to AEP
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "queries/*.sql"
+
+jobs:
+  push-to-aep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Detect Updated SQL File
+        id: file_finder
+        run: |
+          FILE=$(git diff --name-only HEAD~1 HEAD | grep "^queries/.*\.sql" | head -n 1)
+          echo "sql_file=$FILE" >> $GITHUB_OUTPUT
+
+      - name: Stop if no SQL file changed
+        if: steps.file_finder.outputs.sql_file == ''
+        run: echo "No SQL files updated. Skipping AEP push." && exit 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run Script to Push SQL to AEP
+        env:
+          SQL_FILE_PATH: ${{ steps.file_finder.outputs.sql_file }}
+          AEP_TOKEN: ${{ secrets.AEP_TOKEN }}
+          AEP_API_KEY: ${{ secrets.AEP_API_KEY }}
+          AEP_ORG_ID: ${{ secrets.AEP_ORG_ID }}
+          AEP_SANDBOX: ${{ secrets.AEP_SANDBOX }}
+        run: python scripts/push_to_aep.py
