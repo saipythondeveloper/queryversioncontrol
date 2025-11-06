@@ -24,7 +24,7 @@ for sql_file_path in sql_file_paths:
 
     file_name = os.path.basename(sql_file_path).replace(".sql", "")
     query_name = file_name.replace("_", " ")
-    aep_url = f"https://platform.adobe.io/data/foundation/query/query-templates/{file_name}"
+    aep_url = "https://platform.adobe.io/data/foundation/query/query-templates/34ef17e7-ea09-4a83-93d9-1d7d340815bb"
 
     payload = json.dumps({
         "sql": sql_content,
