@@ -14,12 +14,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures full history for accurate git diff
 
       - name: Detect Updated SQL Files
         id: file_finder
         run: |
-          git fetch origin main
-          FILES=$(git diff --name-only origin/main HEAD | grep "^queries/.*\.sql" || true)
+          FILES=$(git diff --name-only HEAD~1 HEAD | grep "^queries/.*\.sql" || true)
           echo "Detected SQL files:"
           echo "$FILES"
           FILES_SINGLE_LINE=$(echo "$FILES" | paste -sd " " -)
@@ -42,4 +43,8 @@ jobs:
       - name: Run Script to Push SQL to AEP
         env:
           SQL_FILE_PATH: ${{ steps.file_finder.outputs.sql_files }}
+          AEP_AUTH_TOKEN: ${{ secrets.AEP_AUTH_TOKEN }}
+          AEP_API_KEY: ${{ secrets.AEP_API_KEY }}
+          AEP_ORG_ID: ${{ secrets.AEP_ORG_ID }}
+          AEP_SANDBOX: ${{ secrets.AEP_SANDBOX }}
         run: python scripts/push_to_aep.py
