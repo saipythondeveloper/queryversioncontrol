@@ -1,0 +1,46 @@
+name: Push SQL to AEP
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - queries/*.sql   # Trigger only when SQL files change
+
+jobs:
+  push-to-aep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Detect Updated SQL Files
+        id: file_finder
+        run: |
+          git fetch origin main
+          FILES=$(git diff --name-only origin/main HEAD | grep "^queries/.*\.sql" || true)
+          echo "Detected SQL files:"
+          echo "$FILES"
+          echo "sql_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Stop if no SQL file changed
+        if: ${{ steps.file_finder.outputs.sql_files == '' }}
+        run: |
+          echo "No SQL files updated. Skipping AEP push."
+          exit 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run Script to Push SQL to AEP
+        env:
+          SQL_FILE_PATHS: ${{ steps.file_finder.outputs.sql_files }}
+        run: python scripts/push_to_aep.py
