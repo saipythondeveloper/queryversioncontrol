@@ -36,5 +36,5 @@ for sql_file_path in sql_file_paths:
     print("Status Code:", response.status_code)
     print("Response:", response.text)
 
-    if response.status_code not in [200, 201]:
+    if response.status_code not in [200, 201, 202]:
         raise SystemExit(f"Failed to push {file_name} to AEP")
