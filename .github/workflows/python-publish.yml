@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - queries/*.sql   # Trigger only when SQL files change
+      - queries/*.sql
 
 jobs:
   push-to-aep:
@@ -22,9 +22,8 @@ jobs:
           FILES=$(git diff --name-only origin/main HEAD | grep "^queries/.*\.sql" || true)
           echo "Detected SQL files:"
           echo "$FILES"
-          echo "sql_files<<EOF" >> $GITHUB_OUTPUT
-          echo "$FILES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          FILES_SINGLE_LINE=$(echo "$FILES" | paste -sd " " -)
+          echo "sql_files=$FILES_SINGLE_LINE" >> $GITHUB_OUTPUT
 
       - name: Stop if no SQL file changed
         if: ${{ steps.file_finder.outputs.sql_files == '' }}
@@ -43,4 +42,8 @@ jobs:
       - name: Run Script to Push SQL to AEP
         env:
           SQL_FILE_PATH: ${{ steps.file_finder.outputs.sql_files }}
+          AEP_AUTH_TOKEN: ${{ secrets.AEP_AUTH_TOKEN }}
+          AEP_API_KEY: ${{ secrets.AEP_API_KEY }}
+          AEP_ORG_ID: ${{ secrets.AEP_ORG_ID }}
+          AEP_SANDBOX: ${{ secrets.AEP_SANDBOX }}
         run: python scripts/push_to_aep.py
