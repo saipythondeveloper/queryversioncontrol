@@ -1,1 +1,1 @@
-select * from luma_loyalty_dataset_navdeep where name='Hemanth' and date='2025-10-31' and city='texas' and country='us' and month='oct' and company='perficient' and client='wf' and add='test' and pos='stc' and city='denton' and 'lastname'='hemanth' and year='2025'
+select * from luma_loyalty_dataset_navdeep where name='Hemanth' and date='2025-10-31' and city='texas' and country='us' and month='oct' and company='perficient' and client='wf' and add='test' and pos='stc' and city='denton' and 'lastname'='hemanth'
